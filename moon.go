@@ -1,4 +1,4 @@
-package gomoon
+package moon
 
 /*
 o                     __...__     *
@@ -24,19 +24,42 @@ import (
 	"time"
 )
 
-type MoonPhase uint8
+// Phase represents a phase of the moon
+type Phase uint8
 
 const (
-	NEW MoonPhase = iota
-	WAXING_CRESCENT
-	FIRST_QUARTER
-	WAXING_GIBBOUS
-	FULL_MOON
-	WANING_GIBBOUS
-	LAST_QUARTER
-	WANING_CRESCENT
+	PhaseNew Phase = iota
+	PhaseWaxingCrescent
+	PhaseFirstQuarter
+	PhaseWaxingGibbous
+	PhaseFull
+	PhaseWaningGibbous
+	PhaseLastQuarter
+	PhaseWaningCrescent
 	phaseCount
 )
+
+var emoji = map[Phase]string{
+	PhaseNew:            "🌑",
+	PhaseWaxingCrescent: "🌒",
+	PhaseFirstQuarter:   "🌓",
+	PhaseWaxingGibbous:  "🌔",
+	PhaseFull:           "🌕",
+	PhaseWaningGibbous:  "🌖",
+	PhaseLastQuarter:    "🌗",
+	PhaseWaningCrescent: "🌘",
+}
+
+var names = map[Phase]string{
+	PhaseNew:            "New Moon",
+	PhaseWaxingCrescent: "Waxing Crescent",
+	PhaseFirstQuarter:   "First Quarter",
+	PhaseWaxingGibbous:  "Waxing Gibbous",
+	PhaseFull:           "Full Moon",
+	PhaseWaningGibbous:  "Waning Gibbous",
+	PhaseLastQuarter:    "Last Quarter",
+	PhaseWaningCrescent: "Waning Crescent",
+}
 
 const (
 	lunationDays     = 29.530588
@@ -44,24 +67,34 @@ const (
 	secondsPerDay    = 86400
 )
 
-// Phase returns the current moon phase using the provided constants, so you can do, for example `if gomoon.PhaseNow() == gomoon.FULL_MOON { ... `
-func PhaseNow() MoonPhase {
-	return Phase(time.Now())
+// GetPhase returns the current moon phase
+func GetPhase() Phase {
+	return GetPhaseAt(time.Now())
 }
 
-// Phase returns the moon phase using the provided constants, so you can do, for example `if gomoon.Phase(time.Now()) == gomoon.FULL_MOON { ... `
-func Phase(t time.Time) MoonPhase {
+// GetPhaseAt returns the moon phase at the given time
+func GetPhaseAt(t time.Time) Phase {
 	phase := calculatePhase(t)
 	spread := (phase * float64(phaseCount)) + 0.5
 	if spread >= float64(phaseCount) {
-		return NEW
+		return PhaseNew
 	}
-	for i := phaseCount - 1; i >= 0; i-- {
+	for i := phaseCount - 1; i > 0; i-- {
 		if spread > float64(i) {
-			return MoonPhase(i)
+			return Phase(i)
 		}
 	}
-	return NEW
+	return PhaseNew
+}
+
+// Emoji returns the emoji representation of the moon phase
+func (p Phase) Emoji() string {
+	return emoji[p]
+}
+
+// String returns the name of the moon phase
+func (p Phase) String() string {
+	return names[p]
 }
 
 // returns moon phase expressed in [0, 1], where 0 and 1 both represent new moon, 0.5 represents full moon

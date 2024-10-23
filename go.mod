@@ -1,5 +1,3 @@
-module github.com/liamg/gomoon
+module github.com/liamg/moon
 
-go 1.12
-
-require github.com/stretchr/testify v1.4.0
+go 1.21

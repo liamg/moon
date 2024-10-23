@@ -1,46 +1,45 @@
-package gomoon
+package moon
 
 import (
 	"testing"
 	"time"
-
-	"github.com/stretchr/testify/assert"
 )
 
 func TestKnownMoonPhases(t *testing.T) {
-
 	tests := []struct {
 		date  time.Time
-		phase MoonPhase
+		phase Phase
 	}{
 		{
 			date:  mustParseTime("1900-01-01T12:00:00Z"),
-			phase: NEW,
+			phase: PhaseNew,
 		},
 		{
 			date:  mustParseTime("2000-01-06T19:24:01Z"),
-			phase: NEW,
+			phase: PhaseNew,
 		},
 		{
 			date:  mustParseTime("1980-07-20T05:51:00Z"),
-			phase: FIRST_QUARTER,
+			phase: PhaseFirstQuarter,
 		},
 		{
 			date:  mustParseTime("1990-09-05T01:46:00Z"),
-			phase: FULL_MOON,
+			phase: PhaseFull,
 		},
 		{
 			date:  mustParseTime("2000-07-24T11:03:00Z"),
-			phase: LAST_QUARTER,
+			phase: PhaseLastQuarter,
 		},
 	}
 
 	for _, test := range tests {
 		t.Run(test.date.String(), func(t *testing.T) {
-			assert.Equal(t, test.phase, Phase(test.date))
+			actual := GetPhaseAt(test.date)
+			if test.phase != actual {
+				t.Errorf("expected %s, got %s", test.phase, actual)
+			}
 		})
 	}
-
 }
 
 func mustParseTime(t string) time.Time {
